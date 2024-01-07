@@ -38,19 +38,19 @@ var (
 
 func BenchmarkMap(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		gg.String(benchPersonMap, gg.N, "address,city")
+		gg.StringResult(benchPersonMap, gg.N, "address,city")
 	}
 }
 
 func BenchmarkStruct(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		gg.String(benchPerson, gg.N, "address,city")
+		gg.StringResult(benchPerson, gg.N, "address,city")
 	}
 }
 
 func BenchmarkSlice(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		gg.String(benchPerson, gg.N, "tags,City=Mesa,street")
+		gg.StringResult(benchPerson, gg.N, "tags,City=Mesa,street")
 	}
 }
 

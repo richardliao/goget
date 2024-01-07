@@ -44,8 +44,16 @@ type Result struct {
 	err *QueryError
 }
 
-// Any searches for elements of an object by path and returns the result element as any.
-func Any(obj any, opt Option, paths ...string) (_ any, err error) {
+// Any best-effort search for elements of an object by path and returns the result element as any.
+// Best-effort means matching keys are case-insensitive, matching unexported fields of the structure
+// and converting to the target type on a best-effort basis.
+func Any(obj any, paths ...string) any {
+	return MayAny(obj, None, paths...)
+}
+
+// AnyResult like [Any], but with option and returns error.
+// If any error is returned, we can check if it is ErrNotFound or ErrTypeMatch.
+func AnyResult(obj any, opt Option, paths ...string) (_ any, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = newQueryError(nil, ErrNotFound, "%v", r)
@@ -56,9 +64,9 @@ func Any(obj any, opt Option, paths ...string) (_ any, err error) {
 	return resultToAny[any](queryResult(obj, opt, paths), opt&Type == Type)
 }
 
-// MayAny like [Any], but ignores errors.
+// MayAny like [AnyResult], but ignores errors.
 func MayAny(obj any, opt Option, paths ...string) any {
-	r, err := Any(obj, opt, paths...)
+	r, err := AnyResult(obj, opt, paths...)
 	if err != nil {
 		return nil
 	}
@@ -66,9 +74,9 @@ func MayAny(obj any, opt Option, paths ...string) any {
 	return r
 }
 
-// MustAny like [Any], but panics on error.
+// MustAny like [AnyResult], but panics on error.
 func MustAny(obj any, opt Option, paths ...string) any {
-	r, err := Any(obj, opt, paths...)
+	r, err := AnyResult(obj, opt, paths...)
 	if err != nil {
 		panic(err)
 	}
@@ -77,7 +85,12 @@ func MustAny(obj any, opt Option, paths ...string) any {
 }
 
 // String like [Any], but returns string.
-func String(obj any, opt Option, paths ...string) (_ string, err error) {
+func String(obj any, paths ...string) string {
+	return MayString(obj, None, paths...)
+}
+
+// StringResult like [AnyResult], but returns string.
+func StringResult(obj any, opt Option, paths ...string) (_ string, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = newQueryError(nil, ErrNotFound, "%v", r)
@@ -90,7 +103,7 @@ func String(obj any, opt Option, paths ...string) (_ string, err error) {
 
 // MayString like [MayAny], but returns string.
 func MayString(obj any, opt Option, paths ...string) string {
-	r, err := String(obj, opt, paths...)
+	r, err := StringResult(obj, opt, paths...)
 	if err != nil {
 		return ""
 	}
@@ -100,7 +113,7 @@ func MayString(obj any, opt Option, paths ...string) string {
 
 // MustString like [MustAny], but returns string.
 func MustString(obj any, opt Option, paths ...string) string {
-	r, err := String(obj, opt, paths...)
+	r, err := StringResult(obj, opt, paths...)
 	if err != nil {
 		panic(err)
 	}
@@ -109,7 +122,12 @@ func MustString(obj any, opt Option, paths ...string) string {
 }
 
 // Int like [Any], but returns int.
-func Int(obj any, opt Option, paths ...string) (_ int, err error) {
+func Int(obj any, paths ...string) int {
+	return MayInt(obj, None, paths...)
+}
+
+// IntResult like [AnyResult], but returns int.
+func IntResult(obj any, opt Option, paths ...string) (_ int, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = newQueryError(nil, ErrNotFound, "%v", r)
@@ -122,7 +140,7 @@ func Int(obj any, opt Option, paths ...string) (_ int, err error) {
 
 // MayInt like [MayAny], but returns int.
 func MayInt(obj any, opt Option, paths ...string) int {
-	r, err := Int(obj, opt, paths...)
+	r, err := IntResult(obj, opt, paths...)
 	if err != nil {
 		return 0
 	}
@@ -132,7 +150,7 @@ func MayInt(obj any, opt Option, paths ...string) int {
 
 // MustInt like [MustAny], but returns int.
 func MustInt(obj any, opt Option, paths ...string) int {
-	r, err := Int(obj, opt, paths...)
+	r, err := IntResult(obj, opt, paths...)
 	if err != nil {
 		panic(err)
 	}
@@ -141,7 +159,12 @@ func MustInt(obj any, opt Option, paths ...string) int {
 }
 
 // Uint like [Any], but returns uint.
-func Uint(obj any, opt Option, paths ...string) (_ uint, err error) {
+func Uint(obj any, paths ...string) uint {
+	return MayUint(obj, None, paths...)
+}
+
+// UintResult like [AnyResult], but returns uint.
+func UintResult(obj any, opt Option, paths ...string) (_ uint, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = newQueryError(nil, ErrNotFound, "%v", r)
@@ -154,7 +177,7 @@ func Uint(obj any, opt Option, paths ...string) (_ uint, err error) {
 
 // MayUint like [MayAny], but returns uint.
 func MayUint(obj any, opt Option, paths ...string) uint {
-	r, err := Uint(obj, opt, paths...)
+	r, err := UintResult(obj, opt, paths...)
 	if err != nil {
 		return 0
 	}
@@ -164,7 +187,7 @@ func MayUint(obj any, opt Option, paths ...string) uint {
 
 // MustUint like [MustAny], but returns uint.
 func MustUint(obj any, opt Option, paths ...string) uint {
-	r, err := Uint(obj, opt, paths...)
+	r, err := UintResult(obj, opt, paths...)
 	if err != nil {
 		panic(err)
 	}
@@ -173,7 +196,12 @@ func MustUint(obj any, opt Option, paths ...string) uint {
 }
 
 // Complex like [Any], but returns complex128.
-func Complex(obj any, opt Option, paths ...string) (_ complex128, err error) {
+func Complex(obj any, paths ...string) complex128 {
+	return MayComplex(obj, None, paths...)
+}
+
+// ComplexResult like [AnyResult], but returns complex128.
+func ComplexResult(obj any, opt Option, paths ...string) (_ complex128, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = newQueryError(nil, ErrNotFound, "%v", r)
@@ -186,7 +214,7 @@ func Complex(obj any, opt Option, paths ...string) (_ complex128, err error) {
 
 // MayComplex like [MayAny], but returns complex128.
 func MayComplex(obj any, opt Option, paths ...string) complex128 {
-	r, err := Complex(obj, opt, paths...)
+	r, err := ComplexResult(obj, opt, paths...)
 	if err != nil {
 		return 0
 	}
@@ -196,7 +224,7 @@ func MayComplex(obj any, opt Option, paths ...string) complex128 {
 
 // MustComplex like [MustAny], but returns complex128.
 func MustComplex(obj any, opt Option, paths ...string) complex128 {
-	r, err := Complex(obj, opt, paths...)
+	r, err := ComplexResult(obj, opt, paths...)
 	if err != nil {
 		panic(err)
 	}
@@ -205,7 +233,12 @@ func MustComplex(obj any, opt Option, paths ...string) complex128 {
 }
 
 // Float like [Any], but returns float64.
-func Float(obj any, opt Option, paths ...string) (_ float64, err error) {
+func Float(obj any, paths ...string) float64 {
+	return MayFloat(obj, None, paths...)
+}
+
+// FloatResult like [AnyResult], but returns float64.
+func FloatResult(obj any, opt Option, paths ...string) (_ float64, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = newQueryError(nil, ErrNotFound, "%v", r)
@@ -218,7 +251,7 @@ func Float(obj any, opt Option, paths ...string) (_ float64, err error) {
 
 // MayFloat like [MayAny], but returns float64.
 func MayFloat(obj any, opt Option, paths ...string) float64 {
-	r, err := Float(obj, opt, paths...)
+	r, err := FloatResult(obj, opt, paths...)
 	if err != nil {
 		return 0
 	}
@@ -228,7 +261,7 @@ func MayFloat(obj any, opt Option, paths ...string) float64 {
 
 // MustFloat like [MustAny], but returns float64.
 func MustFloat(obj any, opt Option, paths ...string) float64 {
-	r, err := Float(obj, opt, paths...)
+	r, err := FloatResult(obj, opt, paths...)
 	if err != nil {
 		panic(err)
 	}
@@ -237,7 +270,12 @@ func MustFloat(obj any, opt Option, paths ...string) float64 {
 }
 
 // Bool like [Any], but returns bool.
-func Bool(obj any, opt Option, paths ...string) (_ bool, err error) {
+func Bool(obj any, paths ...string) bool {
+	return MayBool(obj, None, paths...)
+}
+
+// BoolResult like [AnyResult], but returns bool.
+func BoolResult(obj any, opt Option, paths ...string) (_ bool, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = newQueryError(nil, ErrNotFound, "%v", r)
@@ -250,7 +288,7 @@ func Bool(obj any, opt Option, paths ...string) (_ bool, err error) {
 
 // MayBool like [MayAny], but returns bool.
 func MayBool(obj any, opt Option, paths ...string) bool {
-	r, err := Bool(obj, opt, paths...)
+	r, err := BoolResult(obj, opt, paths...)
 	if err != nil {
 		return false
 	}
@@ -260,7 +298,7 @@ func MayBool(obj any, opt Option, paths ...string) bool {
 
 // MustBool like [MustAny], but returns bool.
 func MustBool(obj any, opt Option, paths ...string) bool {
-	r, err := Bool(obj, opt, paths...)
+	r, err := BoolResult(obj, opt, paths...)
 	if err != nil {
 		panic(err)
 	}
@@ -269,7 +307,12 @@ func MustBool(obj any, opt Option, paths ...string) bool {
 }
 
 // Slice like [Any], but returns slice.
-func Slice[E any](obj any, opt Option, paths ...string) (_ []E, err error) {
+func Slice[E any](obj any, paths ...string) []E {
+	return MaySlice[E](obj, None, paths...)
+}
+
+// SliceResult like [AnyResult], but returns slice.
+func SliceResult[E any](obj any, opt Option, paths ...string) (_ []E, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = newQueryError(nil, ErrNotFound, "%v", r)
@@ -282,7 +325,7 @@ func Slice[E any](obj any, opt Option, paths ...string) (_ []E, err error) {
 
 // MaySlice like [MayAny], but returns slice.
 func MaySlice[E any](obj any, opt Option, paths ...string) []E {
-	r, err := Slice[E](obj, opt, paths...)
+	r, err := SliceResult[E](obj, opt, paths...)
 	if err != nil {
 		return nil
 	}
@@ -292,7 +335,7 @@ func MaySlice[E any](obj any, opt Option, paths ...string) []E {
 
 // MustSlice like [MustAny], but returns slice.
 func MustSlice[E any](obj any, opt Option, paths ...string) []E {
-	r, err := Slice[E](obj, opt, paths...)
+	r, err := SliceResult[E](obj, opt, paths...)
 	if err != nil {
 		panic(err)
 	}
@@ -301,7 +344,12 @@ func MustSlice[E any](obj any, opt Option, paths ...string) []E {
 }
 
 // Map like [Any], but returns map.
-func Map[K comparable, E any](obj any, opt Option, paths ...string) (_ map[K]E, err error) {
+func Map[K comparable, E any](obj any, paths ...string) map[K]E {
+	return MayMap[K, E](obj, None, paths...)
+}
+
+// MapResult like [AnyResult], but returns map.
+func MapResult[K comparable, E any](obj any, opt Option, paths ...string) (_ map[K]E, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = newQueryError(nil, ErrNotFound, "%v", r)
@@ -314,7 +362,7 @@ func Map[K comparable, E any](obj any, opt Option, paths ...string) (_ map[K]E, 
 
 // MayMap like [MayAny], but returns map.
 func MayMap[K comparable, E any](obj any, opt Option, paths ...string) map[K]E {
-	r, err := Map[K, E](obj, opt, paths...)
+	r, err := MapResult[K, E](obj, opt, paths...)
 	if err != nil {
 		return nil
 	}
@@ -324,7 +372,7 @@ func MayMap[K comparable, E any](obj any, opt Option, paths ...string) map[K]E {
 
 // MustMap like [MustAny], but returns map.
 func MustMap[K comparable, E any](obj any, opt Option, paths ...string) map[K]E {
-	r, err := Map[K, E](obj, opt, paths...)
+	r, err := MapResult[K, E](obj, opt, paths...)
 	if err != nil {
 		panic(err)
 	}

@@ -43,20 +43,20 @@ func Example() {
 	addr.owner = person
 
 	// Query simple objects.
-	fmt.Println(goget.MayAny("string1", goget.N))      // string1
-	fmt.Println(goget.MayAny("string1", goget.N, "1")) // <nil>
+	fmt.Println(goget.Any("string1"))      // string1
+	fmt.Println(goget.Any("string1", "1")) // <nil>
 
 	// Query compound objects.
 	fmt.Println(goget.MustAny(person, goget.S, "Name"))                      // Vin Mars
 	fmt.Println(goget.MayAny(person, goget.S, "name"))                       // Vin Mars
-	fmt.Println(goget.Any(person, goget.C, "name"))                          // <nil> QueryError[1]: [struct] value not found by field name
+	fmt.Println(goget.AnyResult(person, goget.C, "name"))                    // <nil> QueryError[1]: [struct] value not found by field name
 	fmt.Println(goget.MustString(person, goget.T, "name"))                   // Vin Mars
-	fmt.Println(goget.Int(person, goget.C|goget.T, "name"))                  // 0 QueryError[1]: [struct] value not found by field name
-	fmt.Println(goget.Int(person, goget.S, "Name"))                          // 0 <nil>
-	fmt.Println(goget.Int(person, goget.T, "Name"))                          // 0 QueryError[2]: result type not match: need int got string
+	fmt.Println(goget.IntResult(person, goget.C|goget.T, "name"))            // 0 QueryError[1]: [struct] value not found by field name
+	fmt.Println(goget.IntResult(person, goget.S, "Name"))                    // 0 <nil>
+	fmt.Println(goget.IntResult(person, goget.T, "Name"))                    // 0 QueryError[2]: result type not match: need int got string
 	fmt.Println(goget.MustAny(person, goget.S, "Join"))                      // 2003-10-06 08:46:40 +0000 UTC
 	fmt.Println(goget.MustAny(person, goget.N, "Join,ext"))                  // 63201026800
-	fmt.Println(goget.Any(person, goget.S, "Join,ext"))                      // <nil> QueryError[1]: [struct] field ext not exported
+	fmt.Println(goget.AnyResult(person, goget.S, "Join,ext"))                // <nil> QueryError[1]: [struct] field ext not exported
 	fmt.Println(goget.MustInt(person, goget.S, "Age"))                       // 30
 	fmt.Println(goget.MustString(person, goget.S, "Age"))                    // 30
 	fmt.Println(goget.MustBool(person, goget.N, "isStaff"))                  // true
@@ -66,21 +66,21 @@ func Example() {
 	fmt.Println(goget.MustString(person, goget.N, "address, street"))        // 123 Main St
 	fmt.Println(goget.MustString(person, goget.N, "address, owner", "Name")) // Vin Mars
 	fmt.Println(goget.MustString(person, goget.N, "tags"))                   // [tag1 tag2 map[d:d] {Malawi Mesa 123 Main St <nil>}]
-	fmt.Println(goget.String(person, goget.N, "tags,1"))                     // tag2 <nil>
-	fmt.Println(goget.String(person, goget.N, "tags,-1"))                    // {Malawi Mesa 123 Main St <nil>} <nil>
-	fmt.Println(goget.Any(person, goget.N, "tags,-5"))                       // <nil> QueryError[1]: [slice] invalid key: -5
-	fmt.Println(goget.MayAny(person, goget.N, "tags,-5"))                    // <nil>
-	fmt.Println(goget.String(person, goget.N, "tags,d=d"))                   // map[d:d] <nil>
-	fmt.Println(goget.String(person, goget.N, "tags,City=Mesa"))             // {Malawi Mesa 123 Main St <nil>} <nil>
-	fmt.Println(goget.String(person, goget.N, "tags,=tag2"))                 // tag2 <nil>
-	fmt.Println(goget.MayAny(person, goget.N, "meta,addr,Country"))          // Malawi
-	fmt.Println(goget.Any(person, goget.N, "meta,addr"))                     // {Malawi Mesa 123 Main St <nil>} <nil>
-	fmt.Println(goget.Any(person, goget.N, "meta,e\\,f"))                    // e,f <nil>
+	fmt.Println(goget.StringResult(person, goget.N, "tags,1"))               // tag2 <nil>
+	fmt.Println(goget.StringResult(person, goget.N, "tags,-1"))              // {Malawi Mesa 123 Main St <nil>} <nil>
+	fmt.Println(goget.AnyResult(person, goget.N, "tags,-5"))                 // <nil> QueryError[1]: [slice] invalid key: -5
+	fmt.Println(goget.Any(person, "tags,-5"))                                // <nil>
+	fmt.Println(goget.StringResult(person, goget.N, "tags,d=d"))             // map[d:d] <nil>
+	fmt.Println(goget.StringResult(person, goget.N, "tags,City=Mesa"))       // {Malawi Mesa 123 Main St <nil>} <nil>
+	fmt.Println(goget.StringResult(person, goget.N, "tags,=tag2"))           // tag2 <nil>
+	fmt.Println(goget.Any(person, "meta,addr,Country"))                      // Malawi
+	fmt.Println(goget.AnyResult(person, goget.N, "meta,addr"))               // {Malawi Mesa 123 Main St <nil>} <nil>
+	fmt.Println(goget.AnyResult(person, goget.N, "meta,e\\,f"))              // e,f <nil>
 
 	// Get generic targets.
-	fmt.Println(goget.MustSlice[any](person, goget.N, "tags"))        // [tag1 tag2 map[d:d] {Malawi Mesa 123 Main St <nil>}]
-	fmt.Println(goget.Map[string, any](person, goget.N, "meta,addr")) // map[City:Mesa Country:Malawi] <nil>
-	fmt.Println(goget.Map[int, any](person, goget.N, "meta,addr"))    // map[] QueryError[2]: cannot convert result {Malawi Mesa 123 Main St <nil>} to map[int]interface {}
+	fmt.Println(goget.MustSlice[any](person, goget.N, "tags"))              // [tag1 tag2 map[d:d] {Malawi Mesa 123 Main St <nil>}]
+	fmt.Println(goget.MapResult[string, any](person, goget.N, "meta,addr")) // map[City:Mesa Country:Malawi] <nil>
+	fmt.Println(goget.MapResult[int, any](person, goget.N, "meta,addr"))    // map[] QueryError[2]: cannot convert result {Malawi Mesa 123 Main St <nil>} to map[int]interface {}
 
 	// Output:
 	// string1

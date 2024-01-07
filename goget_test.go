@@ -124,7 +124,7 @@ func TestString(t *testing.T) {
 
 	assert := assert.New(t)
 	for _, tt := range tests {
-		got, err := String(tt.value, tt.opt, tt.keys...)
+		got, err := StringResult(tt.value, tt.opt, tt.keys...)
 		if tt.err {
 			if err == nil {
 				t.Fatalf("expect error got nil")
@@ -239,7 +239,7 @@ func TestAny(t *testing.T) {
 
 	assert := assert.New(t)
 	for _, tt := range tests {
-		got, err := Any(tt.value, tt.opt, tt.keys...)
+		got, err := AnyResult(tt.value, tt.opt, tt.keys...)
 		if tt.err {
 			if err == nil {
 				t.Fatalf("expect error got nil")
@@ -623,7 +623,7 @@ func TestGetAny(t *testing.T) {
 
 	assert := assert.New(t)
 
-	got, err := Any(personMap, None, "address", "City")
+	got, err := AnyResult(personMap, None, "address", "City")
 	assert.NoErrorf(err, "error: %v", err)
 	if !assert.Equalf(got, got, "got: %+v", got) {
 		t.Fatalf("unexpected error: %s", err)
