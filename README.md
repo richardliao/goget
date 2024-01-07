@@ -4,7 +4,7 @@ Goget is a Go package that provides an easy way to get any sub-element from any 
 
 ```go
 // Get the city where the person lives.
-goget.String(person, goget.N, "address, city")
+goget.String(person, "address, city")
 ```
 
 ## Performance Implication
@@ -98,6 +98,10 @@ func main() {
 
 	addr.owner = person
 
+	// Best-effort search for Name, matching keys are case-insensitive, matching unexported fields of the structure
+	// and converting to the target type on a best-effort basis..
+	fmt.Println(goget.String(person, "Name")) // Vin Mars
+
 	// Must will panic when error.
 	fmt.Println(goget.MustString(person, goget.Safe, "Name")) // Vin Mars
 	// May ignore any errors, always return target object.
@@ -110,19 +114,15 @@ func main() {
 	fmt.Println(goget.MustMap[string, any](person, goget.None, "meta,addr")) // map[City:Mesa Country:Malawi]
 
 	// Try best to get sub-element.
-	street, err := goget.Any(person, goget.None, "tags,City=Mesa,street")
-	if err != nil {
-		fmt.Println("get street error:", err)
-	} else {
-		if s, ok := street.(string); ok {
-			fmt.Println("street:", s) // 123 Main St
-		} else {
-			fmt.Println("get street type not match")
-		}
-	}
+	street := goget.Any(person, "tags,City=Mesa,street")
+    if s, ok := street.(string); ok {
+        fmt.Println("street:", s) // 123 Main St
+    } else {
+        fmt.Println("get street type not match")
+    }
 
 	// Skip unexported fields of the struct.
-	ext, err := goget.Int(person, goget.Safe, "Join,ext")
+	ext, err := goget.IntResult(person, goget.Safe, "Join,ext")
 	if err != nil {
 		fmt.Println("get ext error:", err) // QueryError[1]: [struct] field ext not exported
 	} else {
@@ -130,7 +130,7 @@ func main() {
 	}
 
 	// Strict match target type.
-	isStaff, err := goget.Int(person, goget.Type, "isStaff")
+	isStaff, err := goget.IntResult(person, goget.Type, "isStaff")
 	if err != nil {
 		fmt.Println("get isStaff error:", err) // QueryError[2]: result type not match: need int got bool
 	} else {
