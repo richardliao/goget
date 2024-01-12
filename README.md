@@ -115,11 +115,11 @@ func main() {
 
 	// Try best to get sub-element.
 	street := goget.Any(person, "tags,City=Mesa,street")
-    if s, ok := street.(string); ok {
-        fmt.Println("street:", s) // 123 Main St
-    } else {
-        fmt.Println("get street type not match")
-    }
+	if s, ok := street.(string); ok {
+		fmt.Println("street:", s) // 123 Main St
+	} else {
+		fmt.Println("get street type not match")
+	}
 
 	// Skip unexported fields of the struct.
 	ext, err := goget.IntResult(person, goget.Safe, "Join,ext")
