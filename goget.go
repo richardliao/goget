@@ -51,6 +51,15 @@ func Any(obj any, paths ...string) any {
 	return MayAny(obj, None, paths...)
 }
 
+// AnyDefault like [Any], but returns default on error.
+func AnyDefault(obj any, defaultVal any, paths ...string) any {
+	r, err := AnyResult(obj, None, paths...)
+	if err != nil {
+		return defaultVal
+	}
+	return r
+}
+
 // AnyResult like [Any], but with option and returns error.
 // If any error is returned, we can check if it is ErrNotFound or ErrTypeMatch.
 func AnyResult(obj any, opt Option, paths ...string) (_ any, err error) {
@@ -87,6 +96,15 @@ func MustAny(obj any, opt Option, paths ...string) any {
 // String like [Any], but returns string.
 func String(obj any, paths ...string) string {
 	return MayString(obj, None, paths...)
+}
+
+// StringDefault like [String], but returns default on error.
+func StringDefault(obj any, defaultVal string, paths ...string) string {
+	r, err := StringResult(obj, None, paths...)
+	if err != nil {
+		return defaultVal
+	}
+	return r
 }
 
 // StringResult like [AnyResult], but returns string.
@@ -126,6 +144,15 @@ func Int(obj any, paths ...string) int {
 	return MayInt(obj, None, paths...)
 }
 
+// IntDefault like [Int], but returns default on error.
+func IntDefault(obj any, defaultVal int, paths ...string) int {
+	r, err := IntResult(obj, None, paths...)
+	if err != nil {
+		return defaultVal
+	}
+	return r
+}
+
 // IntResult like [AnyResult], but returns int.
 func IntResult(obj any, opt Option, paths ...string) (_ int, err error) {
 	defer func() {
@@ -161,6 +188,15 @@ func MustInt(obj any, opt Option, paths ...string) int {
 // Uint like [Any], but returns uint.
 func Uint(obj any, paths ...string) uint {
 	return MayUint(obj, None, paths...)
+}
+
+// UintDefault like [Uint], but returns default on error.
+func UintDefault(obj any, defaultVal uint, paths ...string) uint {
+	r, err := UintResult(obj, None, paths...)
+	if err != nil {
+		return defaultVal
+	}
+	return r
 }
 
 // UintResult like [AnyResult], but returns uint.
@@ -200,6 +236,15 @@ func Complex(obj any, paths ...string) complex128 {
 	return MayComplex(obj, None, paths...)
 }
 
+// ComplexDefault like [Complex], but returns default on error.
+func ComplexDefault(obj any, defaultVal complex128, paths ...string) complex128 {
+	r, err := ComplexResult(obj, None, paths...)
+	if err != nil {
+		return defaultVal
+	}
+	return r
+}
+
 // ComplexResult like [AnyResult], but returns complex128.
 func ComplexResult(obj any, opt Option, paths ...string) (_ complex128, err error) {
 	defer func() {
@@ -235,6 +280,15 @@ func MustComplex(obj any, opt Option, paths ...string) complex128 {
 // Float like [Any], but returns float64.
 func Float(obj any, paths ...string) float64 {
 	return MayFloat(obj, None, paths...)
+}
+
+// FloatDefault like [Float], but returns default on error.
+func FloatDefault(obj any, defaultVal float64, paths ...string) float64 {
+	r, err := FloatResult(obj, None, paths...)
+	if err != nil {
+		return defaultVal
+	}
+	return r
 }
 
 // FloatResult like [AnyResult], but returns float64.
@@ -274,6 +328,15 @@ func Bool(obj any, paths ...string) bool {
 	return MayBool(obj, None, paths...)
 }
 
+// BoolDefault like [Bool], but returns default on error.
+func BoolDefault(obj any, defaultVal bool, paths ...string) bool {
+	r, err := BoolResult(obj, None, paths...)
+	if err != nil {
+		return defaultVal
+	}
+	return r
+}
+
 // BoolResult like [AnyResult], but returns bool.
 func BoolResult(obj any, opt Option, paths ...string) (_ bool, err error) {
 	defer func() {
@@ -311,6 +374,15 @@ func Slice[E any](obj any, paths ...string) []E {
 	return MaySlice[E](obj, None, paths...)
 }
 
+// SliceDefault like [Slice], but returns default on error.
+func SliceDefault[E any](obj any, defaultVal []E, paths ...string) []E {
+	r, err := SliceResult[E](obj, None, paths...)
+	if err != nil {
+		return defaultVal
+	}
+	return r
+}
+
 // SliceResult like [AnyResult], but returns slice.
 func SliceResult[E any](obj any, opt Option, paths ...string) (_ []E, err error) {
 	defer func() {
@@ -346,6 +418,15 @@ func MustSlice[E any](obj any, opt Option, paths ...string) []E {
 // Map like [Any], but returns map.
 func Map[K comparable, E any](obj any, paths ...string) map[K]E {
 	return MayMap[K, E](obj, None, paths...)
+}
+
+// MapDefault like [Map], but returns default on error.
+func MapDefault[K comparable, E any](obj any, defaultVal map[K]E, paths ...string) map[K]E {
+	r, err := MapResult[K, E](obj, None, paths...)
+	if err != nil {
+		return defaultVal
+	}
+	return r
 }
 
 // MapResult like [AnyResult], but returns map.
