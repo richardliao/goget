@@ -43,8 +43,9 @@ func Example() {
 	addr.owner = person
 
 	// Query simple objects.
-	fmt.Println(goget.Any("string1"))      // string1
-	fmt.Println(goget.Any("string1", "1")) // <nil>
+	fmt.Println(goget.Any("string1"))                               // string1
+	fmt.Println(goget.Any("string1", "1"))                          // <nil>
+	fmt.Println(goget.AnyDefault("string1", "default string", "1")) // default string
 
 	// Query compound objects.
 	fmt.Println(goget.MustAny(person, goget.S, "Name"))                      // Vin Mars
@@ -85,6 +86,7 @@ func Example() {
 	// Output:
 	// string1
 	// <nil>
+	// default string
 	// Vin Mars
 	// Vin Mars
 	// <nil> QueryError[1]: [struct] value not found by field name

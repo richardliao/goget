@@ -101,6 +101,9 @@ func main() {
 	// Best-effort search for Name, matching keys are case-insensitive, matching unexported fields of the structure
 	// and converting to the target type on a best-effort basis..
 	fmt.Println(goget.String(person, "Name")) // Vin Mars
+	
+	// Try with default.
+	fmt.Println(goget.StringDefault(person, "Default Name", "NonExists")) // Default Name
 
 	// Must will panic when error.
 	fmt.Println(goget.MustString(person, goget.Safe, "Name")) // Vin Mars
